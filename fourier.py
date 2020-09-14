@@ -4,20 +4,20 @@ import matplotlib.pyplot as plt
 from pickle_shortcuts import *
 from params import fourier_params as params
                 
-start_and_stop = {}   # Maps FRB names to:
-                      # 0. Start time
-                      # 1. Stop time
-                
-data = {}             # Maps FRB names to:
-                      # 0. Time data (x)
-                      # 1. Signal data (fx)
-                      
-n = 1                 # Largest number of sample points across all FRBs.
-                      # Used for all FFTs; bursts with fewer sample
-                      # points are zero-padded until they have n_max
-                      # sample points.
+start_and_stop = {} # Maps FRB names to:
+                    # 0. Start time
+                    # 1. Stop time
 
-zero_pad = True # Debug variable
+data = {}           # Maps FRB names to:
+                    # 0. Time data (x)
+                    # 1. Signal data (fx)
+
+n = 1               # Largest number of sample points across all FRBs.
+                    # Used for all FFTs; bursts with fewer sample
+                    # points are zero-padded until they have n_max
+                    # sample points.
+
+zero_pad = True     # Debug variable
 
 with open("start_and_stop.csv") as fp:
     for line in fp.readlines():
@@ -54,9 +54,6 @@ for filename in os.listdir('data'):
         
         peak = max(fx)
         peaks[frb] = peak
-        fx = [fx / peak for fx in fx] # Normalize bursts by peak flux.
-                                      # TODO: Try normalizing by the
-                                      #       integral instead.
         data[frb] = (x, fx)
         
 pdump(data, "trimmed_data.pickle")
@@ -71,6 +68,8 @@ for frb, (x, fx) in data.items():
             stop += dx
             x.append(stop)
             fx.append(0)
+    
+    fx = [fx / peaks[frb] for fx in fx] # Normalize bursts by peak flux.
     
     Fk = np.fft.fft(fx) / len(x) # Fourier coefficients (divided by n).
                                  # It's probably not necessary to divide

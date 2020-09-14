@@ -7,21 +7,34 @@ from params import plotting_params as params
 frbs, emb = pload("tsne_output.pickle")
 data = pload("trimmed_data.pickle")
 start_and_stop = pload("start_and_stop.pickle")
-peaks = pload("peaks.pickle")
 
 fig, (ax1, ax2) = plt.subplots(nrows=2)
 
 ax1.set_xticks([])
 ax1.set_yticks([])
 
-ax1.set_title('FRB output space')
+ax1.set_title('t-SNE output space')
 
-#durations_list = [ for frb in frbs]
+# Set each FRB's color
+if params['color_by'] == 'groups':
+    cmap = 'RdBu'
+    color = [int(frb in params['blue_group']) for frb in frbs]
+else:
+    cmap = params['cmap']
     
+    if params['color_by'] == 'flux':
+        peaks = pload("peaks.pickle")
+        color = [peaks[frb] for frb in frbs]
+        
+    if params['max_color']:
+        print("hi")
+        color = np.minimum(color, params['max_color'])
+    
+# Plot the 2D embedding
 sc = ax1.scatter(emb[:, 0], emb[:, 1],
                  s=params['radius'],
-                 c=[min(peaks[frb], 3) for frb in frbs],
-                 cmap=params['cmap'])
+                 c=color,
+                 cmap=cmap)
                  
 annot = ax1.annotate('', xy=(0, 0), xytext=(20, 20),
                      textcoords='offset points',
@@ -40,7 +53,11 @@ def update_annot(ind):
     annot.xy = pos
     
     frb = frbs[ind]
-    text = frb + '\n' + str(peaks[frb])
+    
+    text = frb + '\n'
+    if params['color_by'] == 'flux':
+        text += str(peaks[frb]) + ' Jy'
+    
     annot.set_text(text)
     
 def hover(event):
@@ -49,8 +66,7 @@ def hover(event):
         cont, ind = sc.contains(event)
         if cont:
             ind = ind['ind'][0] # Index of the mouseovered FRB.
-                                # Hopefully, no two FRBs end up
-                                # in the same spot.
+            
             update_annot(ind)
             annot.set_visible(True)
             
@@ -66,6 +82,7 @@ def hover(event):
 
 fig.canvas.mpl_connect('motion_notify_event', hover)
 
-fig.colorbar(sc, ax=ax1)
+if params['color_by'] != 'groups':
+    fig.colorbar(sc, ax=ax1, orientation='vertical')
 
 plt.show()
