@@ -22,14 +22,16 @@ tsne_params = {
 }
 
 plotting_params = {
-    'radius'    : 50,
+    'dark_mode' : False,    # Whether the background should be black
+
+    'radius'    : 50,       # Radius of each data point
     
-    'color_by'  : 'groups', # 'groups'     : FRBs are colored blue if in
-                            #                'blue_group' param, and red
-                            #                otherwise.
+    'color_by'  : 'groups', # 'groups': FRBs are colored blue if in
+                            #           'blue_group' param, and red
+                            #            otherwise.
                             #
-                            # 'flux'       : FRBs are colored by peak
-                            #                flux using 'cmap' param.
+                            # 'flux'  : FRBs are colored by peak flux
+                            #           using the 'cmap' param.
     
     'cmap'      : 'RdBu_r', # Ignored if 'color_by' is 'groups'.
     
@@ -38,8 +40,10 @@ plotting_params = {
                             # colorbar.
     
     'blue_group': [
-        'FRB010125', 'FRB010621', 'FRB110220', 'FRB130729', 'FRB131104',
-        'FRB151206', 'FRB151230'
+        'FRB010125', 'FRB010621', 'FRB110220', 'FRB130729',
+        'FRB131104', 'FRB151206', 'FRB151230'
     ],
     
+    'cbar_orientation': 'vertical' # Whether the colorbar should be
+                                   # 'horizontal' or 'vertical'.
 }

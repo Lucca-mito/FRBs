@@ -8,6 +8,9 @@ frbs, emb = pload("tsne_output.pickle")
 data = pload("trimmed_data.pickle")
 start_and_stop = pload("start_and_stop.pickle")
 
+if params['dark_mode']:
+    plt.style.use('dark_background')
+
 fig, (ax1, ax2) = plt.subplots(nrows=2)
 
 ax1.set_xticks([])
@@ -27,7 +30,6 @@ else:
         color = [peaks[frb] for frb in frbs]
         
     if params['max_color']:
-        print("hi")
         color = np.minimum(color, params['max_color'])
     
 # Plot the 2D embedding
@@ -83,6 +85,9 @@ def hover(event):
 fig.canvas.mpl_connect('motion_notify_event', hover)
 
 if params['color_by'] != 'groups':
-    fig.colorbar(sc, ax=ax1, orientation='vertical')
+    fig.colorbar(sc,
+                 ax=ax1,
+                 orientation=params['cbar_orientation']
+    )
 
 plt.show()
